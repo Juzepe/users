@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -111,9 +112,15 @@ class UserController extends Controller
             'password' => 'confirmed|max:255',
         ]);
 
-        if (isset($validatedData["image"])) $validatedData["image"] = $this->image();
+        if (isset($validatedData["image"])) {
+            $validatedData["image"] = $this->image();
+
+            File::delete($user->image);
+        }
+
         if ($validatedData["password"]) $validatedData["password"] = bcrypt($request->password);
         else unset($validatedData["password"]);
+
 
         $user->update($validatedData);
 
